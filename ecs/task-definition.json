@@ -4,11 +4,11 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
   "memory": "1024",
-  "executionRoleArn": "arn:aws:iam::881196376889:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::419097672885:role/LabRole",
   "containerDefinitions": [
     {
       "name": "pasteleria-backend",
-      "image": "881196376889.dkr.ecr.us-east-1.amazonaws.com/pasteleria_backend:latest",
+      "image": "419097672885.dkr.ecr.us-east-1.amazonaws.com/pasteleria_backend:latest",
       "essential": true,
       "portMappings": [
         {
