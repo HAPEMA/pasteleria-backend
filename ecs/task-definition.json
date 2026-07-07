@@ -1,0 +1,74 @@
+{
+  "family": "pasteleria-backend-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::881196376889:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "pasteleria-backend",
+      "image": "881196376889.dkr.ecr.us-east-1.amazonaws.com/pasteleria_backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8083,
+          "protocol": "tcp"
+        }
+      ],
+      "dependsOn": [
+        {
+          "containerName": "pasteleria-mysql",
+          "condition": "HEALTHY"
+        }
+      ],
+      "environment": [
+        { "name": "DB_HOST", "value": "127.0.0.1" },
+        { "name": "DB_PORT", "value": "3306" },
+        { "name": "DB_NAME", "value": "pasteleria_db" },
+        { "name": "DB_USER", "value": "pasteleria_user" },
+        { "name": "DB_PASSWORD", "value": "pasteleria_pass" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/pasteleria_backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    },
+    {
+      "name": "pasteleria-mysql",
+      "image": "mysql:8.0",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3306,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "MYSQL_ROOT_PASSWORD", "value": "root_pass" },
+        { "name": "MYSQL_DATABASE", "value": "pasteleria_db" },
+        { "name": "MYSQL_USER", "value": "pasteleria_user" },
+        { "name": "MYSQL_PASSWORD", "value": "pasteleria_pass" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD || exit 1"],
+        "interval": 10,
+        "timeout": 5,
+        "retries": 5,
+        "startPeriod": 30
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/pasteleria_backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "mysql"
+        }
+      }
+    }
+  ]
+}
